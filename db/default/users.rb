@@ -47,7 +47,8 @@ def create_admin_user
     :password => password,
     :password_confirmation => password,
     :email => email,
-    :login => email
+    :login => email,
+    :name => 'Admin'
   }
 
   load 'spree/user.rb'
