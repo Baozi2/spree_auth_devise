@@ -1,22 +1,114 @@
-<% @body_id = 'signup' %>
-<%= render :partial => 'spree/shared/error_messages', :locals => { :target => @user } %>
-<div class="col-md-6 col-md-offset-3">
-  <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><%= Spree.t(:new_customer) %></h3>
-    </div>
-      <div id="new-customer" class="panel-body" data-hook="login">
-          <%= form_for resource, :as => :spree_user, :url => spree.registration_path(@user) do |f| %>
-            <div data-hook="signup_inside_form">
-              <%= render :partial => 'spree/shared/user_form', :locals => { :f => f } %>
-              <p><%= f.submit Spree.t(:create), :class => 'btn btn-lg btn-success btn-block' %></p>
-            </div>
-          <% end %>
-          <div class="text-center">
-            <%= Spree.t(:or) %> 
-              <%= link_to Spree.t(:login_as_existing), spree.login_path %>
-          </div>
-          <div data-hook="login_extras"></div>
+
+
+<style type="text/css">
+
+  .sign-container {
+    border: 1px solid #D9D9D9;
+    padding-top: 40px;
+    padding-bottom: 20px;
+    margin-top: 50px;
+    height: 550px
+  }
+
+
+  .sign-in-container input,
+  .sign-up-container input {
+    height: 40px;
+  }
+
+
+  .sign-title {
+    font-size: 16px;
+    font-weight: normal;
+    color: #000;
+    margin-bottom: 25px;
+  }
+
+  .sign-facebook {
+    margin-bottom: 25px;
+  }
+
+  .ui.horizontal.divider {
+    display: table;
+    white-space: nowrap;
+    height: auto;
+    margin: '';
+    overflow: hidden;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .ui.horizontal.divider:after, .ui.horizontal.divider:before {
+    content: '';
+    display: table-cell;
+    position: relative;
+    top: 50%;
+    width: 50%;
+    background-repeat: no-repeat;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABaAAAAACCAYAAACuTHuKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1OThBRDY4OUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1OThBRDY4QUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjU5OEFENjg3Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU5OEFENjg4Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+VU513gAAADVJREFUeNrs0DENACAQBDBIWLGBJQby/mUcJn5sJXQmOQMAAAAAAJqt+2prAAAAAACg2xdgANk6BEVuJgyMAAAAAElFTkSuQmCC)
+  }
+
+  .ui.horizontal.divider:before {
+    background-position: right 1em top 50%
+  }
+
+  .ui.horizontal.divider:after {
+    background-position: left 1em top 50%
+  }
+
+  .sign-in-form, .sign-up-form {
+    margin-top: 25px;
+  }
+
+  .sign-in-form .sign-submit-container {
+    margin-top: 85px;
+  }
+
+  .sign-submit-container {
+    margin-top: 40px;
+  }
+
+  .btn-blue {
+    background-color: #59C3D3;
+    color: #fff;
+    padding: 12px 50px;
+    width: 145px;
+  }
+
+</style>
+
+
+<div class="container">
+
+  <%= render :partial => 'spree/shared/error_messages', :locals => { :target => @user } %>
+  <div class="sign-container">
+
+    <div class="col-md-offset-3   col-md-6 col-xs-12 sign-up-container">
+      <div class="text-center sign-title"><span>SIGN UP</span></div>
+      <div class="text-center sign-facebook">
+        <img src="/frontend/images/fackbook.png">
       </div>
+      <div class="ui  horizontal divider">or</div>
+      <div class="sign-up-form">
+        <%= form_for resource, :as => :spree_user, :url => spree.registration_path(@user) do |f| %>
+            <div class="form-group">
+              <label for="signup-email">EMAIL ADDRESS</label>
+              <%= f.email_field :email, :class => 'form-control', autocomlete: 'off' %>
+            </div>
+            <div class="form-group">
+              <label for="signup-password">PASSWORD</label>
+              <%= f.password_field :password, :class => 'form-control', autocomlete: 'off' %>
+            </div>
+            <div class="form-group">
+              <label for="confirm-password">CONFIRM PASSWORD</label>
+              <%= f.password_field :password_confirmation, :class => 'form-control',
+                                   autocomlete: 'off' %>
+            </div>
+            <div class="text-center sign-submit-container">
+              <button type="submit" class="btn btn-blue">Sign Up</button>
+            </div>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
