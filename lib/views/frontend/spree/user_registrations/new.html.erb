@@ -10,8 +10,6 @@
     height: 550px
   }
 
-
-  .sign-in-container input,
   .sign-up-container input {
     height: 40px;
   }
@@ -56,23 +54,27 @@
     background-position: left 1em top 50%
   }
 
-  .sign-in-form, .sign-up-form {
-    margin-top: 25px;
-  }
 
   .sign-in-form .sign-submit-container {
     margin-top: 85px;
   }
 
   .sign-submit-container {
-    margin-top: 40px;
+    margin-top: 20px;
   }
+  .sign-up-container {
+    padding-left: 80px;
+    padding-right: 80px;
 
+  }
+  .sign-up-form {
+    margin-top: 25px;
+  }
   .btn-blue {
     background-color: #59C3D3;
     color: #fff;
     padding: 12px 50px;
-    width: 145px;
+    width: 100%;
   }
 
 </style>
@@ -106,6 +108,9 @@
             </div>
             <div class="text-center sign-submit-container">
               <button type="submit" class="btn btn-blue">Sign Up</button>
+            </div>
+            <div class="text-center sign-submit-container">
+              Or <%= link_to 'Login as Existing Customer', spree.login_path %>
             </div>
         <% end %>
       </div>
