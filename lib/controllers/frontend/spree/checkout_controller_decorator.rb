@@ -1,7 +1,7 @@
 require 'spree/core/validators/email'
 Spree::CheckoutController.class_eval do
   before_filter :check_authorization
-  before_filter :check_registration, :except => [:registration, :update_registration]
+  before_filter :check_registration, :except => [:registration, :update_registration, :guest]
 
   def registration
     @user = Spree::User.new
@@ -15,6 +15,10 @@ Spree::CheckoutController.class_eval do
       @user = Spree::User.new
       render 'registration'
     end
+  end
+
+  def guest
+
   end
 
   private

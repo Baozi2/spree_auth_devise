@@ -25,6 +25,7 @@ Spree::Core::Engine.add_routes do
   end
 
   get '/checkout/registration' => 'checkout#registration', :as => :checkout_registration
+  get '/checkout/guest' => 'checkout#guest', :as => :checkout_guest
   put '/checkout/registration' => 'checkout#update_registration', :as => :update_checkout_registration
 
   resource :account, :controller => 'users', except: [:show]
