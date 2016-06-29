@@ -77,7 +77,16 @@
     padding: 12px 50px;
     width: 100%;
   }
-
+  .guest_btn{
+    font-size: 12px;
+    border: none;
+    padding: 2px 6px;
+    font-size: 10px;
+    display:inline;
+  }
+  .sign_in_link{
+    padding: 2px 6px;
+  }
 </style>
 
 
@@ -111,7 +120,7 @@
               <button type="submit" class="btn btn-blue">Sign Up</button>
             </div>
             <div class="text-center sign-submit-container">
-              Or <%= link_to 'Login as Existing Customer', spree.login_path %>| <%= link_to 'Checkout as a guest', spree.checkout_guest_path %>
+              <%= link_to 'Sign In', spree.login_path, class:'sign_in_link' %> | <%= link_to 'CHECKOUT AT  GUEST', spree.checkout_guest_path, class: 'btn guest_btn' %>
             </div>
         <% end %>
       </div>
