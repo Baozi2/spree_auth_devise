@@ -6,6 +6,7 @@ class Spree::UserSessionsController < Devise::SessionsController
   include Spree::Core::ControllerHelpers::Order
   include Spree::Core::ControllerHelpers::Store
 
+  skip_before_action :verify_authenticity_token, only: [:facebook]
   def create
     authenticate_spree_user!
 
@@ -30,6 +31,58 @@ class Spree::UserSessionsController < Devise::SessionsController
         format.js {
           render :json => { error: t('devise.failure.invalid') }, status: :unprocessable_entity
         }
+      end
+    end
+  end
+
+
+  def facebook
+
+
+
+    if params[:facebook_access_token]
+      begin
+        facebook_access_token = params[:facebook_access_token]
+        graph = Koala::Facebook::API.new(facebook_access_token)
+        profile = graph.get_object("me")
+        facebook_uid = profile["id"]
+        existing_user = Spree.user_class.where(facebook_uid: facebook_uid).first
+        if existing_user
+          if existing_user.facebook_access_token != facebook_access_token
+            existing_user.facebook_access_token = facebook_access_token
+            existing_user.save!
+          end
+          sign_in(existing_user)
+          render json: { status: 1 }
+        else
+          email = profile["email"]
+          name = profile["name"]
+          if not email.blank? and Spree.user_class.where(email: email).exists?
+            #raise_doorkeeper_typed_error(:user_exists)
+            ExceptionLogger.log_error("facebook  login   email had  ")
+            render json: { status: 0 }
+          else
+            if email.blank? then
+              # temp hack
+              email = "#{profile['id']}@nonexistentfbuseremail.com"
+            end
+            @user = Spree.user_class.create!(
+                email: email,
+                name: name,
+                facebook_uid: facebook_uid,
+                facebook_access_token: facebook_access_token,
+                password: Devise.friendly_token.first(8)
+            )
+            sign_in(@user)
+            render json: { status: 1 }
+          end
+        end
+      rescue Koala::Facebook::AuthenticationError => e
+        ExceptionLogger.log_error(e)
+        #raise_doorkeeper_typed_error(:invalid_facebook_access_token)
+        render json: { status: 0 }
+      rescue => e
+        render json: { status: 0 }
       end
     end
   end
