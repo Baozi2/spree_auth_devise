@@ -38,8 +38,6 @@ class Spree::UserSessionsController < Devise::SessionsController
 
   def facebook
 
-
-
     if params[:facebook_access_token]
       begin
         facebook_access_token = params[:facebook_access_token]
