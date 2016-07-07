@@ -50,7 +50,8 @@ class Spree::UserSessionsController < Devise::SessionsController
             existing_user.facebook_access_token = facebook_access_token
             existing_user.save!
           end
-          sign_in(existing_user)
+          sign_in(:user, existing_user)
+          sign_in(:spree_user, existing_user)
           render json: { status: 1 }
         else
           email = profile["email"]
@@ -72,7 +73,9 @@ class Spree::UserSessionsController < Devise::SessionsController
                 facebook_access_token: facebook_access_token,
                 password: Devise.friendly_token.first(8)
             )
-            sign_in(@user)
+            sign_in(:user, @user)
+            sign_in(:spree_user, @user)
+            associate_user
             render json: { status: 1 }
           end
         end
