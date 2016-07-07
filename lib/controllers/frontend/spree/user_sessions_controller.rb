@@ -57,6 +57,7 @@ class Spree::UserSessionsController < Devise::SessionsController
           name = profile["name"]
           if not email.blank? and Spree.user_class.where(email: email).exists?
             #raise_doorkeeper_typed_error(:user_exists)
+            Rails.logger.error('facebook  login   email had')
             ExceptionLogger.log_error("facebook  login   email had  ")
             render json: { status: 0 }
           else
@@ -76,10 +77,12 @@ class Spree::UserSessionsController < Devise::SessionsController
           end
         end
       rescue Koala::Facebook::AuthenticationError => e
+        Rails.logger.error(e)
         ExceptionLogger.log_error(e)
         #raise_doorkeeper_typed_error(:invalid_facebook_access_token)
         render json: { status: 0 }
       rescue => e
+        Rails.logger.error(e)
         render json: { status: 0 }
       end
     end
