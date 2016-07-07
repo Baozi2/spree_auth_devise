@@ -91,7 +91,7 @@
     <div class="col-md-offset-3   col-md-6 col-xs-12 sign-up-container">
       <div class="text-center sign-title"><span>SIGN UP</span></div>
       <div class="text-center sign-facebook">
-        <img src="/frontend/images/fackbook.png">
+        <a href="###" id="facebookBtn"><img src="/frontend/images/fackbook.png"></a>
       </div>
       <div class="ui  horizontal divider">or</div>
       <div class="sign-up-form">
@@ -120,3 +120,40 @@
     </div>
   </div>
 </div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '378436995697539',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  $("#facebookBtn").click(function(){
+    FB.login(function(response) {
+      $.ajax({
+        url: '/user/oauth/facebook/callback',
+        type: 'post',
+        data: { facebook_access_token: response.authResponse.accessToken},
+        success: function(res){
+          if(res.status){
+            window.location.href= '/shop'
+          }else{
+            alert('Facebook login error')
+          }
+        },
+        fail: function(){
+          alert("Facebook login error")
+        }
+      });
+    }, {scope: 'public_profile,email'});
+  });
+</script>
