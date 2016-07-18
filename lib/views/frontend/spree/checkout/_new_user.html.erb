@@ -1,6 +1,3 @@
-
-
-
 <style type="text/css">
 
   .sign-container {
@@ -14,7 +11,6 @@
   .sign-up-container input {
     height: 40px;
   }
-
 
   .sign-title {
     font-size: 16px;
@@ -55,7 +51,6 @@
     background-position: left 1em top 50%
   }
 
-
   .sign-in-form .sign-submit-container {
     margin-top: 85px;
   }
@@ -63,39 +58,45 @@
   .sign-submit-container {
     margin-top: 20px;
   }
+
   .sign-up-container {
     padding-left: 80px;
     padding-right: 80px;
-
+    border-right: 1px solid #D9D9D9;
   }
+
   .sign-up-form {
     margin-top: 25px;
   }
+
   .btn-blue {
     background-color: #59C3D3;
     color: #fff;
     padding: 12px 50px;
     width: 100%;
   }
-  .guest_btn{
-    font-size: 12px;
-    border: none;
-    padding: 2px 6px;
-    font-size: 10px;
-    display:inline;
+
+  .guest_btn {
+    background-color: #59C3D3;
+    padding: 12px 50px;
+    display: block;
+    width: 100%;
+    color: #fff;
+    margin: 0 auto;
+    width: 270px;
   }
-  .sign_in_link{
+
+  .sign_in_link {
     padding: 2px 6px;
   }
 </style>
 
 
 <div class="container">
-
-  <%= render :partial => 'spree/shared/error_messages', :locals => { :target => @user } %>
+  <%= render :partial => 'spree/shared/error_messages', :locals => {:target => @user} %>
   <div class="sign-container">
 
-    <div class="col-md-offset-3   col-md-6 col-xs-12 sign-up-container">
+    <div class="col-md-6 col-xs-12 sign-up-container">
       <div class="text-center sign-title"><span>SIGN UP</span></div>
       <div class="text-center sign-facebook">
         <a href="###" id="facebookBtn"><img src="/frontend/images/fackbook.png"></a>
@@ -120,45 +121,60 @@
               <button type="submit" class="btn btn-blue">Sign Up</button>
             </div>
             <div class="text-center sign-submit-container">
-              <%= link_to 'Sign In', spree.login_path, class:'sign_in_link' %> | <%= link_to 'CHECKOUT AT  GUEST', spree.checkout_guest_path, class: 'btn guest_btn' %>
+              <%= link_to 'Sign In', spree.login_path, class: 'sign_in_link' %>
             </div>
         <% end %>
       </div>
     </div>
+    <div class="col-md-6 col-xs-12" style="padding-top: 170px">
+      <div class="text-center">
+        <div class="text-center sign-title"><span>GUEST</span></div>
+        <div class="text-center sign-submit-container">
+          <%= link_to 'CHECK OUT AS A GUEST', spree.checkout_guest_path, class: 'btn  guest_btn' %>
+        </div>
+        <div style="margin-top: 35px">
+          Check out as a guest and create an account after.
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 </div>
 
 <script>
-  window.fbAsyncInit = function() {
+  window.fbAsyncInit = function () {
     FB.init({
-      appId      : '378436995697539',
-      xfbml      : true,
-      version    : 'v2.6'
+      appId: '378436995697539',
+      xfbml: true,
+      version: 'v2.6'
     });
   };
 
-  (function(d, s, id){
+  (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {return;}
-    js = d.createElement(s); js.id = id;
+    if (d.getElementById(id)) {
+      return;
+    }
+    js = d.createElement(s);
+    js.id = id;
     js.src = "//connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
 
-  $("#facebookBtn").click(function(){
-    FB.login(function(response) {
+  $("#facebookBtn").click(function () {
+    FB.login(function (response) {
       $.ajax({
         url: '/user/oauth/facebook/callback',
         type: 'post',
-        data: { facebook_access_token: response.authResponse.accessToken},
-        success: function(res){
-          if(res.status){
-            window.location.href= '/checkout/address'
-          }else{
+        data: {facebook_access_token: response.authResponse.accessToken},
+        success: function (res) {
+          if (res.status) {
+            window.location.href = '/checkout/address'
+          } else {
             alert('Facebook login error')
           }
         },
-        fail: function(){
+        fail: function () {
           alert("Facebook login error")
         }
       });
