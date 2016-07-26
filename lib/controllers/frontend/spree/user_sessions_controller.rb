@@ -7,30 +7,46 @@ class Spree::UserSessionsController < Devise::SessionsController
   include Spree::Core::ControllerHelpers::Store
 
   skip_before_action :verify_authenticity_token, only: [:facebook]
-  def create
-    authenticate_spree_user!
 
-    if spree_user_signed_in?
-      respond_to do |format|
-        format.html {
-          flash[:success] = Spree.t(:logged_in_succesfully)
-          redirect_back_or_default(after_sign_in_path_for(spree_current_user))
-        }
-        format.js {
-          render :json => {:user => spree_current_user,
-                           :ship_address => spree_current_user.ship_address,
-                           :bill_address => spree_current_user.bill_address}.to_json
-        }
+  def create
+
+    user = Spree.user_class.find_by(email: params[:spree_user][:email])
+    if user
+      authenticate_spree_user!
+      if spree_user_signed_in?
+        respond_to do |format|
+          format.html {
+            flash[:success] = Spree.t(:logged_in_succesfully)
+            redirect_back_or_default(after_sign_in_path_for(spree_current_user))
+          }
+          format.js {
+            render :json => {:user => spree_current_user,
+                             :ship_address => spree_current_user.ship_address,
+                             :bill_address => spree_current_user.bill_address}.to_json
+          }
+        end
+      else
+        respond_to do |format|
+          format.html {
+            flash.now[:error] = t('devise.failure.invalid')
+            render :new
+          }
+          format.js {
+            render :json => {error: t('devise.failure.invalid')}, status: :unprocessable_entity
+          }
+        end
       end
-    else
-      respond_to do |format|
-        format.html {
-          flash.now[:error] = t('devise.failure.invalid')
-          render :new
-        }
-        format.js {
-          render :json => { error: t('devise.failure.invalid') }, status: :unprocessable_entity
-        }
+    else##sign up
+      @user = Spree.user_class.new(spree_user_params.merge({:password_confirmation => spree_user_params[:password]}))
+      if @user.save
+        set_flash_message(:notice, :signed_up)
+        sign_in(:spree_user, @user)
+        session[:spree_user_signup] = true
+        associate_user
+        respond_with @user, location: after_sign_in_path_for(@user)
+      else
+        clean_up_passwords(resource)
+        render :new
       end
     end
   end
@@ -52,7 +68,7 @@ class Spree::UserSessionsController < Devise::SessionsController
           end
           sign_in(:user, existing_user)
           sign_in(:spree_user, existing_user)
-          render json: { status: 1 }
+          render json: {status: 1}
         else
           email = profile["email"]
           name = profile["name"]
@@ -60,7 +76,7 @@ class Spree::UserSessionsController < Devise::SessionsController
             #raise_doorkeeper_typed_error(:user_exists)
             Rails.logger.error('facebook  login   email had')
             ExceptionLogger.log_error("facebook  login   email had  ")
-            render json: { status: 0 }
+            render json: {status: 0}
           else
             if email.blank? then
               # temp hack
@@ -76,28 +92,32 @@ class Spree::UserSessionsController < Devise::SessionsController
             sign_in(:user, @user)
             sign_in(:spree_user, @user)
             associate_user
-            render json: { status: 1 }
+            render json: {status: 1}
           end
         end
       rescue Koala::Facebook::AuthenticationError => e
         Rails.logger.error(e)
         ExceptionLogger.log_error(e)
         #raise_doorkeeper_typed_error(:invalid_facebook_access_token)
-        render json: { status: 0 }
+        render json: {status: 0}
       rescue => e
         Rails.logger.error(e)
-        render json: { status: 0 }
+        render json: {status: 0}
       end
     end
   end
 
   private
-    def accurate_title
-      Spree.t(:login)
-    end
+  def accurate_title
+    Spree.t(:login)
+  end
 
-    def redirect_back_or_default(default)
-      redirect_to(session["spree_user_return_to"] || default)
-      session["spree_user_return_to"] = nil
-    end
+  def redirect_back_or_default(default)
+    redirect_to(session["spree_user_return_to"] || default)
+    session["spree_user_return_to"] = nil
+  end
+
+  def spree_user_params
+    params.require(:spree_user).permit(:email, :password)
+  end
 end

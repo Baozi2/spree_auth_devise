@@ -1,16 +1,13 @@
 <style type="text/css">
-
   .sign-container {
     border: 1px solid #D9D9D9;
-    padding-top: 20px;
+    padding-top: 36px;
     padding-bottom: 20px;
     margin-top: 20px;
     height: 550px
   }
   .sign-in-container{
-    padding-left: 80px;
-    padding-right: 80px;
-
+    padding: 20px 80px;
   }
   .sign-in-container input{
     height: 40px;
@@ -72,20 +69,22 @@
     padding: 12px 50px;
     width: 100%;
   }
-  .link_to{
-    font-size: 14px;
-    margin-top: 20px;
+    .error-tips{
+     border-color: #f00;
+    }
+  .error-content{
+    display: none;
+    color: #f00;
   }
-
 </style>
 <div class="container">
 
   <div class="col-md-12 col-xs-12  <%= 'alert alert-danger' if flash[:error]%>" id="alert-message">
     <%= flash[:error] if  flash[:error]%>
   </div>
-  <div class="sign-container">
-    <div class="col-md-offset-3 col-md-6 col-xs-12 sign-in-container">
-      <div class="text-center sign-title"><span>SIGN IN</span></div>
+  <div class="sign-container ">
+    <div class="col-md-offset-3  col-md-6 col-xs-12 sign-in-container">
+      <div class="text-center sign-title"><span>LOG IN / SIGN UP</span></div>
       <div class="text-center sign-facebook">
         <a href="###" id="facebookBtn"><img src="/frontend/images/fackbook.png"></a>
       </div>
@@ -95,19 +94,21 @@
             <div class="form-group">
               <label for="email">EMAIL ADDRESS</label>
               <%= f.email_field :email, :class => 'form-control', :tabindex => 1, autofocus: true, autocomplete: 'off' %>
+              <span class="error-content"></span>
             </div>
             <div class="form-group">
               <label for="password">PASSWORD</label>
-              <%= f.password_field :password, :class => 'form-control', :tabindex => 2, autocomplete: 'off' %>
+              <%= f.password_field :password,
+                                   :class => 'form-control', maxlength: 128,
+                                   :tabindex => 2, autocomplete: 'off',
+                                   placeholder: 'At least 6 characters.' %>
+              <span class="error-content"></span>
             </div>
             <div class="form-group">
               <a href="<%= spree.recover_password_path %>" style="text-decoration: underline;">Forgot your password?</a>
             </div>
             <div class="text-center sign-submit-container">
-              <button type="submit" class="btn btn-blue">Sign In</button>
-            </div>
-            <div class="text-center link_to">
-              Or <%= link_to 'Create a new account', spree.signup_path %>
+              <button type="submit" class="btn btn-blue">LOG IN</button>
             </div>
         <% end %>
       </div>
@@ -116,19 +117,32 @@
 </div>
 <script>
   $(function () {
+
+    if($("#alert-message").is(":visible")) {
+      setTimeout(function(){
+        $("#alert-message").hide();
+      }, 2000)
+    }
     var email = $("#spree_user_email"),
         password = $("#spree_user_password");
-    $("#sign_in_form").submit(function () {
-      if(stringBlank(email.val())){
-        $("#alert-message").show().text('Email required').addClass("alert alert-danger");
-        return false;
-      }else if(stringBlank(password.val())){
-        $("#alert-message").show().text('Password required').addClass("alert alert-danger");
-        return false;
-      }
+
+    $("#spree_user_email, #spree_user_password").focus(function () {
+      $(this).removeClass('error-tips').next().text('').hide();
+     
     });
+    $("#sign_in_form").submit(function () {
+       var flag = true;
+      if(stringBlank(email.val()) || !email.val().match(/^[^@\s]+@([^@\s]+\.)+[^@\s]+$/)){
+        email.addClass('error-tips').next().show().text('Please enter a valid email address.');
+        flag =  false;
+      }
+      if(stringBlank(password.val()) || password.val().length < 6 ){
+        password.addClass('error-tips').next().show().text('Please enter a valid password.');
+        flag = false;
+      }
 
-
+      return flag;
+    });
   });
 
   function stringBlank(string) {
