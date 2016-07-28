@@ -6,12 +6,15 @@
     margin-top: 20px;
     height: 550px
   }
-  .sign-in-container{
+
+  .sign-in-container {
     padding: 20px 80px;
   }
-  .sign-in-container input{
+
+  .sign-in-container input {
     height: 40px;
   }
+
   .sign-title {
     font-size: 16px;
     font-weight: normal;
@@ -51,7 +54,7 @@
     background-position: left 1em top 50%
   }
 
-  .sign-in-form{
+  .sign-in-form {
     margin-top: 25px;
   }
 
@@ -69,18 +72,20 @@
     padding: 12px 50px;
     width: 100%;
   }
-    .error-tips{
-     border-color: #f00;
-    }
-  .error-content{
+
+  .error-tips {
+    border-color: #f00;
+  }
+
+  .error-content {
     display: none;
     color: #f00;
   }
 </style>
 <div class="container">
 
-  <div class="col-md-12 col-xs-12  <%= 'alert alert-danger' if flash[:error]%>" id="alert-message">
-    <%= flash[:error] if  flash[:error]%>
+  <div class="col-md-12 col-xs-12  <%= 'alert alert-danger' if flash[:error] %>" id="alert-message">
+    <%= flash[:error] if flash[:error] %>
   </div>
   <div class="sign-container ">
     <div class="col-md-offset-3  col-md-6 col-xs-12 sign-in-container">
@@ -118,8 +123,8 @@
 <script>
   $(function () {
 
-    if($("#alert-message").is(":visible")) {
-      setTimeout(function(){
+    if ($("#alert-message").is(":visible")) {
+      setTimeout(function () {
         $("#alert-message").hide();
       }, 2000)
     }
@@ -128,15 +133,15 @@
 
     $("#spree_user_email, #spree_user_password").focus(function () {
       $(this).removeClass('error-tips').next().text('').hide();
-     
+
     });
     $("#sign_in_form").submit(function () {
-       var flag = true;
-      if(stringBlank(email.val()) || !email.val().match(/^[^@\s]+@([^@\s]+\.)+[^@\s]+$/)){
+      var flag = true;
+      if (stringBlank(email.val()) || !email.val().match(/^[^@\s]+@([^@\s]+\.)+[^@\s]+$/)) {
         email.addClass('error-tips').next().show().text('Please enter a valid email address.');
-        flag =  false;
+        flag = false;
       }
-      if(stringBlank(password.val()) || password.val().length < 6 ){
+      if (stringBlank(password.val()) || password.val().length < 6) {
         password.addClass('error-tips').next().show().text('Please enter a valid password.');
         flag = false;
       }
@@ -153,39 +158,42 @@
   }
 </script>
 <script>
-  window.fbAsyncInit = function() {
+  window.fbAsyncInit = function () {
     FB.init({
-      appId      : '378436995697539',
-      xfbml      : true,
-      version    : 'v2.6'
+      appId: '378436995697539',
+      xfbml: true,
+      version: 'v2.6'
     });
   };
 
-  (function(d, s, id){
+  (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {return;}
-    js = d.createElement(s); js.id = id;
+    if (d.getElementById(id)) {
+      return;
+    }
+    js = d.createElement(s);
+    js.id = id;
     js.src = "//connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
 
-  $("#facebookBtn").click(function(){
-        FB.login(function(response) {
-        $.ajax({
-          url: '/user/oauth/facebook/callback',
-          type: 'post',
-          data: { facebook_access_token: response.authResponse.accessToken},
-          success: function(res){
-            if(res.status){
-              window.location.href= '/'
-            }else{
-              alert('Facebook login error')
-            }
-          },
-          fail: function(){
-            alert("Facebook login error")
+  $("#facebookBtn").click(function () {
+    FB.login(function (response) {
+      $.ajax({
+        url: '/user/oauth/facebook/callback',
+        type: 'post',
+        data: {facebook_access_token: response.authResponse.accessToken},
+        success: function (res) {
+          if (res.status) {
+            window.location.href = '/'
+          } else {
+            alert('Facebook login error')
           }
-        });
+        },
+        fail: function () {
+          alert("Facebook login error")
+        }
+      });
     }, {scope: 'public_profile,email'});
   });
 </script>
