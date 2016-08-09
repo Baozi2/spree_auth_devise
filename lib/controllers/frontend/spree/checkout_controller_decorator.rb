@@ -1,10 +1,12 @@
 require 'spree/core/validators/email'
 Spree::CheckoutController.class_eval do
   before_filter :check_authorization
-  before_filter :check_registration, :except => [:registration, :update_registration]
+  before_filter :check_registration, :except => [:registration, :update_registration, :guest]
 
   def registration
-    @user = Spree::User.new
+  end
+
+  def guest
   end
 
   def update_registration
@@ -13,9 +15,10 @@ Spree::CheckoutController.class_eval do
     else
       flash[:registration_error] = t(:email_is_invalid, :scope => [:errors, :messages])
       @user = Spree::User.new
-      render 'registration'
+      render 'guest'
     end
   end
+
 
   private
     def order_params

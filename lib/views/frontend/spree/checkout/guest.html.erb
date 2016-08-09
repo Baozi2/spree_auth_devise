@@ -1,0 +1,65 @@
+<style type="text/css">
+  .guest-container{
+    margin-top: 30px;
+  }
+  .guest{
+    border: 1px solid #E2E2E2;
+    padding: 75px 110px;
+  }
+    .panel-title{
+      border-bottom: 1px solid #E2E2E2;
+      padding-left: 7px;
+      padding-bottom: 20px;
+    }
+    .guest .panel-body{
+      padding-left: 20px;
+    }
+    .p-email{
+      margin-top: 20px;
+    }
+    .p-email input{
+      width: 444px;
+      height: 50px;
+    }
+    .sub_btn{
+      width: 175px;
+      margin-top: 20px;
+    }
+    .btn-block{
+      border-radius: 6px;
+      background-color: #59C3D3;
+      text-transform: uppercase;
+    }
+    .jump a{
+      color: #4A90E2;
+    }
+    .jump{
+      margin-top: 20px;
+      margin-bottom: 33px;
+    }
+</style>
+<div class="container guest-container">
+  <% if Spree::Config[:allow_guest_checkout] %>
+      <div class="col-md-offset-2 col-md-8">
+        <div class="panel guest">
+          <div class="panel-heading">
+            <h3 class="panel-title">Email Address</h3>
+          </div>
+          <div id="guest_checkout" class="panel-body" data-hook>
+            <p>Tell us where to send your order confirmation and tracking number</p>
+            <% if flash[:registration_error] %>
+                <div class='flash error'><%= flash[:registration_error] %></div>
+            <% end %>
+            <%= form_for @order, :url => update_checkout_registration_path, :method => :put, :html => {:id => 'checkout_form_registration'} do |f| %>
+                <p class="p-email">
+                  <%= f.email_field :email, :class => 'form-control title', :placeholder => 'Email Address', :required => 'required' %>
+                </p>
+                <p class="sub_btn"><%= f.submit Spree.t(:continue), :class => 'btn btn-lg btn-success btn-block' %></p>
+            <% end %>
+            <p class="jump">OR <a href="<%= spree.login_path%>">Continue With FACEBOOK</a></p>
+            <p>By continuing, you agreet to our Terms of Use and consent to our Privacy Policy</p>
+          </div>
+        </div>
+      </div>
+  <% end %>
+</div>

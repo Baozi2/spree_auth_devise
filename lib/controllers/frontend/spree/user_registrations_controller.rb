@@ -17,8 +17,15 @@ class Spree::UserRegistrationsController < Devise::RegistrationsController
 
   # POST /resource/sign_up
   def create
+
+    puts '*' * 80
+    puts request.env["devise.mapping"].name
+    puts request.env["devise.mapping"].to
+
     @user = build_resource(spree_user_params)
     if resource.save
+      puts resource
+      puts '*' * 80
       set_flash_message(:notice, :signed_up)
       sign_in(:spree_user, @user)
       session[:spree_user_signup] = true

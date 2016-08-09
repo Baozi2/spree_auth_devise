@@ -1,27 +1,223 @@
-<%= render :partial => 'spree/shared/error_messages', :locals => { :target => @user } %>
-<h1><%= Spree.t(:registration) %></h1>
-<div id="registration" class="row" data-hook>
-  <div id="account">
-    <%= render :partial => 'new_user' %>
-  </div>
-  <% if Spree::Config[:allow_guest_checkout] %>
-    <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><%= Spree.t(:guest_user_account) %></h3>
+<style type="text/css">
+  .sign-container {
+    border: 1px solid #D9D9D9;
+    padding-top: 36px;
+    padding-bottom: 20px;
+    margin-top: 20px;
+    height: 550px
+  }
+  .sign-in-container{
+    padding: 20px 80px;
+    border-right: 1px solid #D9D9D9;
+  }
+  .sign-in-container input{
+    height: 40px;
+  }
+  .sign-title {
+    font-size: 16px;
+    font-weight: normal;
+    color: #000;
+    margin-bottom: 25px;
+  }
+
+  .sign-facebook {
+    margin-bottom: 25px;
+  }
+
+  .ui.horizontal.divider {
+    display: table;
+    white-space: nowrap;
+    height: auto;
+    margin: '';
+    overflow: hidden;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .ui.horizontal.divider:after, .ui.horizontal.divider:before {
+    content: '';
+    display: table-cell;
+    position: relative;
+    top: 50%;
+    width: 50%;
+    background-repeat: no-repeat;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABaAAAAACCAYAAACuTHuKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1OThBRDY4OUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo1OThBRDY4QUNDMTYxMUU0OUE3NUVGOEJDMzMzMjE2NyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjU5OEFENjg3Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU5OEFENjg4Q0MxNjExRTQ5QTc1RUY4QkMzMzMyMTY3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+VU513gAAADVJREFUeNrs0DENACAQBDBIWLGBJQby/mUcJn5sJXQmOQMAAAAAAJqt+2prAAAAAACg2xdgANk6BEVuJgyMAAAAAElFTkSuQmCC)
+  }
+
+  .ui.horizontal.divider:before {
+    background-position: right 1em top 50%
+  }
+
+  .ui.horizontal.divider:after {
+    background-position: left 1em top 50%
+  }
+
+  .sign-in-form{
+    margin-top: 25px;
+  }
+
+  .sign-in-form .sign-submit-container {
+    margin-top: 20px;
+  }
+
+  .sign-submit-container {
+    margin-top: 40px;
+  }
+
+  .btn-blue {
+    background-color: #59C3D3;
+    color: #fff;
+    padding: 12px 50px;
+    width: 100%;
+  }
+
+  .guest_btn {
+    background-color: #59C3D3;
+    padding: 12px 50px;
+    display: block;
+    width: 100%;
+    color: #fff;
+    margin: 0 auto;
+    width: 270px;
+  }
+
+  .sign_in_link {
+    padding: 2px 6px;
+  }
+  .error-tips{
+    border-color: #f00;
+  }
+  .error-content{
+    display: none;
+    color: #f00;
+  }
+
+
+</style>
+
+
+<div class="container">
+  <div class="sign-container">
+
+    <div class="col-md-6 col-xs-12 sign-in-container">
+      <div class="text-center sign-title"><span>LOG IN / SIGN UP</span></div>
+      <div class="text-center sign-facebook">
+        <a href="###" id="facebookBtn"><img src="/frontend/images/fackbook.png"></a>
+      </div>
+      <div class="ui  horizontal divider">or</div>
+      <div class="sign-in-form">
+        <%= form_for Spree::User.new, :as => :spree_user, :url => spree.create_new_session_path, html: {id: 'sign_in_form'} do |f| %>
+            <div class="form-group">
+              <label for="email">EMAIL ADDRESS</label>
+              <%= f.email_field :email, :class => 'form-control', :tabindex => 1, autofocus: true, autocomplete: 'off' %>
+              <span class="error-content"></span>
+            </div>
+            <div class="form-group">
+              <label for="password">PASSWORD</label>
+              <%= f.password_field :password,
+                                   :class => 'form-control', maxlength: 128,
+                                   :tabindex => 2, autocomplete: 'off',
+                                   placeholder: 'At least 6 characters.' %>
+              <span class="error-content"></span>
+            </div>
+            <div class="form-group">
+              <a href="<%= spree.recover_password_path %>" style="text-decoration: underline;">Forgot your password?</a>
+            </div>
+            <div class="text-center sign-submit-container">
+              <button type="submit" class="btn btn-blue">LOG IN</button>
+            </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-md-6 col-xs-12" style="padding-top: 170px">
+      <div class="text-center">
+        <div class="text-center sign-title"><span>GUEST</span></div>
+        <div class="text-center sign-submit-container">
+          <%= link_to 'CHECK OUT AS A GUEST', spree.checkout_guest_path, class: 'btn  guest_btn' %>
         </div>
-        <div id="guest_checkout" class="panel-body" data-hook>
-          <% if flash[:registration_error] %>
-            <div class='flash error'><%= flash[:registration_error] %></div>
-          <% end %>
-          <%= form_for @order, :url => update_checkout_registration_path, :method => :put, :html => { :id => 'checkout_form_registration' } do |f| %>
-            <p>
-              <%= f.email_field :email, :class => 'form-control title', :placeholder => Spree.t(:email) %>
-            </p>
-            <p><%= f.submit Spree.t(:continue), :class => 'btn btn-lg btn-success btn-block' %></p>
-          <% end %>
+        <div style="margin-top: 35px">
+          Check out as a guest and create an account after.
         </div>
       </div>
     </div>
-  <% end %>
+  </div>
 </div>
+</div>
+<script>
+  $(function () {
+
+    if($("#alert-message").is(":visible")) {
+      setTimeout(function(){
+        $("#alert-message").hide();
+      }, 2000)
+    }
+    var email = $("#spree_user_email"),
+        password = $("#spree_user_password");
+
+    $("#spree_user_email, #spree_user_password").focus(function () {
+      $(this).removeClass('error-tips').next().text('').hide();
+
+    });
+    $("#sign_in_form").submit(function () {
+      var flag = true;
+      if(stringBlank(email.val()) || !email.val().match(/^[^@\s]+@([^@\s]+\.)+[^@\s]+$/)){
+        email.addClass('error-tips').next().show().text('Please enter a valid email address.');
+        flag =  false;
+      }
+      if(stringBlank(password.val()) || password.val().length < 6 ){
+        password.addClass('error-tips').next().show().text('Please enter a valid password.');
+        flag = false;
+      }
+
+      return flag;
+    });
+  });
+
+  function stringBlank(string) {
+    if ((string.length == 0) || (string.replace(/(^\s*)|(\s*$)/g, "").length == 0)) {
+      return true;
+    }
+    return false;
+  }
+</script>
+<script>
+  window.fbAsyncInit = function () {
+    FB.init({
+      appId: '378436995697539',
+      xfbml: true,
+      version: 'v2.6'
+    });
+  };
+
+  (function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {
+      return;
+    }
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  $("#facebookBtn").click(function () {
+    FB.login(function (response) {
+      $.ajax({
+        url: '/user/oauth/facebook/callback',
+        type: 'post',
+        data: {facebook_access_token: response.authResponse.accessToken},
+        success: function (res) {
+          if (res.status) {
+            window.location.href = '/checkout/address'
+          } else {
+            alert('Facebook login error')
+          }
+        },
+        fail: function () {
+          alert("Facebook login error")
+        }
+      });
+    }, {scope: 'public_profile,email'});
+  });
+
+</script>
